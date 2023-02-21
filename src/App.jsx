@@ -7,18 +7,34 @@ export const TURNS = { // turnos
 }
 
 
-const Square = ({children, updateBoard, index}) =>{
+const Square = ({children, updateBoard, index, isSelected}) =>{
+
+  const className = `square ${isSelected ? 'is-selected' : ''}`
+
+  const handleClick = () => {
+    updateBoard(index)
+  }
   return (
-    <div className='square'>
+    <div onClick={handleClick} className={className}>
       {children}
     </div>
   )
 }
 function App() {
-  const [board, setBorad] = useState(
+  const [board, setBoard] = useState(
     Array(9).fill(null)
   )
   const [turn, setTurn] = useState(TURNS.X)
+
+  const updateBoard = (index) => {
+    // actualizar el tablero
+    const newBoard = [...board]
+    newBoard[index] = turn
+    setBoard(newBoard)
+    // cambiar el turno
+    const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X
+    setTurn(newTurn)
+  }
 
   return (
     <main className='board'>
@@ -31,7 +47,7 @@ function App() {
               <Square
                 key={index}
                 index={index}
-            
+                updateBoard={updateBoard}
               >
                 {board[index]}
               </Square>
