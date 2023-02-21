@@ -27,8 +27,10 @@ function App() {
   const [turn, setTurn] = useState(TURNS.X)
 
   const updateBoard = (index) => {
+    // no actualizamos esta posición si ya tiene algo
+    if (board[index]) return
     // actualizar el tablero
-    const newBoard = [...board]
+    const newBoard = [...board] //evita modificar original
     newBoard[index] = turn
     setBoard(newBoard)
     // cambiar el turno
