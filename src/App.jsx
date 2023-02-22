@@ -1,37 +1,9 @@
 import { useState } from 'react'
 import confetti from 'canvas-confetti'
-
-
-export const TURNS = { // turnos
-  X: 'X',
-  O: 'O'
-}
-
-
-const Square = ({ children, updateBoard, index, isSelected }) => {
-
-  const className = `square ${isSelected ? 'is-selected' : ''}`
-
-  const handleClick = () => {
-    updateBoard(index)
-  }
-  return (
-    <div onClick={handleClick} className={className}>
-      {children}
-    </div>
-  )
-}
-
-const WINNER_COMBOS = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-]
+import { Square } from './components/Square.jsx'
+import { TURNS } from './constants.js'
+import { checkWinner, checkEndGame } from './logic/board.js'
+import { WinnerModal } from './components/WinnerModal.jsx'
 
 function App() {
   const [board, setBoard] = useState(
@@ -41,36 +13,13 @@ function App() {
   // null es que no hay ganador, false es que hay un empate
   const [winner, setWinner] = useState(null)
 
-  const checkWinner = (boardToCheck) => {
-    // revisamos todas las combinaciones ganadoras para ver si X u O ganó
-    for (const combo of WINNER_COMBOS) {
-      const [a, b, c] = combo  //e.g. [0, 3, 6]
-      if (
-        boardToCheck[a] && // posición 0 -> x u o
-        boardToCheck[a] === boardToCheck[b] && //0 y 3 -> x->x  u o->o  Tienen lo mismo?
-        boardToCheck[a] === boardToCheck[c] // 0 y 6  son iguales -> 3 en raya
-      ) {
-        return boardToCheck[a] //x u o, el ganador
-      }
-    }
-    // si no hay ganador
-    return null
-  }
-
   const resetGame = () => {
     setBoard(Array(9).fill(null))
     setTurn(TURNS.X)
     setWinner(null)
   }
 
- // newBoard = ['x', 'o', 'x', null, null, null, null, 'o', null] 
- // 9 posiciones llenas en tablero -> fin del juego
-  const checkEndGame = (newBoard) => {
-    // revisamos si hay un empate, si no hay más espacios vacíos en el tablero
-    //si todas las squares (posiciones de array newBoard) no son null. true -> game over
-    return newBoard.every((square) => square !== null)
-  }
-
+ 
   const updateBoard = (index) => {
     // no actualizamos esta posición si ya tiene algo O si hay un ganador ya
     if (board[index] || winner) return
@@ -92,7 +41,7 @@ function App() {
       // })
       //Tienes acceso al valor anterior, pero no puedes hacer un async await
       //no devuelve una promesa
-    }  else if (checkEndGame(newBoard)) { //si chequeo tablero y no hay ganador
+    } else if (checkEndGame(newBoard)) { //si chequeo tablero y no hay ganador
       setWinner(false) // empate
     }
   }
@@ -126,29 +75,7 @@ function App() {
         </Square>
       </section>
 
-      {
-        winner !== null && (
-          <section className='winner'>
-            <div className='text'>
-              <h2>
-                {
-                  winner === false
-                    ? 'Empate'
-                    : 'Ganó:'
-                }
-              </h2>
-
-              <header className='win'>
-                {winner && <Square>{winner}</Square>}
-              </header>
-
-              <footer>
-                <button onClick={resetGame}>Empezar de nuevo</button>
-              </footer>
-            </div>
-          </section>
-        )
-      }
+      <WinnerModal resetGame={resetGame} winner={winner} />
     </main>
   )
 }
