@@ -4,6 +4,7 @@ import { Square } from './components/Square.jsx'
 import { TURNS } from './constants.js'
 import { checkWinner, checkEndGame } from './logic/board.js'
 import { WinnerModal } from './components/WinnerModal.jsx'
+import { saveGameToStorage, resetGameStorage } from './logic/storage/index.js'
 
 function App() {
   const [board, setBoard] = useState(() => {
@@ -25,8 +26,7 @@ function App() {
     setTurn(TURNS.X)
     setWinner(null)
 
-    window.localStorage.removeItem('board')
-    window.localStorage.removeItem('turn')
+   resetGameStorage()
   }
 
  
@@ -40,9 +40,11 @@ function App() {
     // cambiar el turno
     const newTurn = turn === TURNS.X ? TURNS.O : TURNS.X
     setTurn(newTurn)
-    //guardar aquí partida
-    window.localStorage.setItem('board', JSON.stringify(newBoard))
-    window.localStorage.setItem('turn', newTurn)
+    // guardar aquí la partida
+    saveGameToStorage({
+      board: newBoard,
+      turn: newTurn
+    })
     // revisar si hay ganador
     const newWinner = checkWinner(newBoard)//Por parametro le paso el valor correcto, último tablero. Solución a asincronismo. 
     if (newWinner) {
