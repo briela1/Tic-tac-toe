@@ -62,6 +62,14 @@ function App() {
     setWinner(null)
   }
 
+ // newBoard = ['x', 'o', 'x', null, null, null, null, 'o', null] 
+ // 9 posiciones llenas en tablero -> fin del juego
+  const checkEndGame = (newBoard) => {
+    // revisamos si hay un empate, si no hay más espacios vacíos en el tablero
+    //si todas las squares (posiciones de array newBoard) no son null. true -> game over
+    return newBoard.every((square) => square !== null)
+  }
+
   const updateBoard = (index) => {
     // no actualizamos esta posición si ya tiene algo O si hay un ganador ya
     if (board[index] || winner) return
@@ -83,13 +91,15 @@ function App() {
       // })
       //Tienes acceso al valor anterior, pero no puedes hacer un async await
       //no devuelve una promesa
+    }  else if (checkEndGame(newBoard)) { //si chequeo tablero y no hay ganador
+      setWinner(false) // empate
     }
   }
 
   return (
     <main className='board'>
       <h1>Tic tac toe</h1>
-
+      <button onClick={resetGame}>Reset del juego</button>
       <section className='game'>
         {
           board.map((_, index) => {
