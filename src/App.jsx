@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import confetti from 'canvas-confetti'
 
 
 export const TURNS = { // turnos
@@ -83,7 +84,7 @@ function App() {
     // revisar si hay ganador
     const newWinner = checkWinner(newBoard)//Por parametro le paso el valor correcto, último tablero. Solución a asincronismo. 
     if (newWinner) {
-
+      confetti()
       setWinner(newWinner)
       // setWinner((prevWinner) => {
       //   console.log(`Ganador: ${newWinner}, el anterior era ${prevWinner}`)
